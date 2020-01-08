@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-require("dotenv").config({ path: "dev.env" });
+require("dotenv").config({ path: ".env" });
 require("mongoose")
     .connect(process.env.DB_URL, {
         useNewUrlParser: true,

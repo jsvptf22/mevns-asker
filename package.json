@@ -5,9 +5,10 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
+        "postinstall": "npm run build",
         "dev": "nodemon index.js",
         "webpack": "webpack --mode development --watch",
-        "production": "webpack --mode production"
+        "build": "webpack --mode production"
     },
     "keywords": [],
     "author": "",

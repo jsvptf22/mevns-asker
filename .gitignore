@@ -1,2 +1,3 @@
 node_modules/
-dev.env
+app/public/js/bundle.js
+.env
