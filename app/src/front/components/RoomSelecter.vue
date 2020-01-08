@@ -49,6 +49,12 @@
                             <td>{{ room.name }}</td>
                             <td>
                                 <button
+                                    v-on:click="openRoom(room.name)"
+                                    class="btn btn-success"
+                                >
+                                    Unirse
+                                </button>
+                                <button
                                     v-on:click="setActiveRoom(room._id)"
                                     class="btn btn-primary"
                                 >
@@ -70,7 +76,7 @@
 </template>
 
 <script>
-import Room from "./Room";
+import Room from "../classes/Room";
 import io from "socket.io-client";
 
 export default {
@@ -145,8 +151,11 @@ export default {
             let room = this.rooms.find(r => r._id == id);
             this.activeRoom = new Room(room);
         },
+        openRoom(name) {
+            window.open(`/room.html?roomName=${name}`, "_blank");
+        },
         createSocket() {
-            this.socket = io();
+            this.socket = io("/roomSelecter");
 
             this.socket.on("refreshRooms", rooms => {
                 this.rooms = rooms;

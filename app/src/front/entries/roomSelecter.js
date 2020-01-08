@@ -1,5 +1,5 @@
 import Vue from "vue";
-import RoomSelecter from "./components/RoomSelecter.vue";
+import RoomSelecter from "../components/RoomSelecter.vue";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 

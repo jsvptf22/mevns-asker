@@ -1,10 +1,13 @@
 const { VueLoaderPlugin } = require("vue-loader");
 
 module.exports = {
-    entry: "./app/src/front/main.js",
+    entry: {
+        roomSelecter: "./app/src/front/entries/roomSelecter.js",
+        room: "./app/src/front/entries/room.js"
+    },
     output: {
-        path: __dirname + "/app/public/js",
-        filename: "bundle.js"
+        filename: "[name].js",
+        path: __dirname + "/app/public/js"
     },
     module: {
         rules: [
