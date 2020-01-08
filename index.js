@@ -7,7 +7,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 require("dotenv").config({ path: ".env" });
-const { host, port } = require("./app/src/back/routes/enviromentvars");
+const { host, port } = require("./app/src/back/routes/enviromentVars");
 
 //conexion a mongodb
 require("mongoose")

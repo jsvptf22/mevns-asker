@@ -1,5 +1,4 @@
 const request = require("request");
-const { host, port } = require("../routes/enviromentvars");
 
 exports = module.exports = function(io) {
     const nsp = io.of("/room");
