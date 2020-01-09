@@ -49,7 +49,7 @@
                             <td>{{ room.name }}</td>
                             <td>
                                 <button
-                                    v-on:click="openRoom(room.name)"
+                                    v-on:click="openRoom(room._id)"
                                     class="btn btn-success"
                                 >
                                     Unirse
@@ -151,8 +151,8 @@ export default {
             let room = this.rooms.find(r => r._id == id);
             this.activeRoom = new Room(room);
         },
-        openRoom(name) {
-            window.open(`/room.html?roomName=${name}`, "_blank");
+        openRoom(id) {
+            window.open(`/room.html?room=${id}`, "_blank");
         },
         createSocket() {
             this.socket = io("/roomSelecter");

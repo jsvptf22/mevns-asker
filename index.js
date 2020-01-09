@@ -7,20 +7,8 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 require("dotenv").config({ path: ".env" });
+require("./app/src/back/database/connection");
 const { host, port } = require("./app/src/back/routes/enviromentVars");
-
-//conexion a mongodb
-require("mongoose")
-    .connect(process.env.DB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(() => {
-        console.log("db connection ok");
-    })
-    .catch(() => {
-        console.log("db connection error");
-    });
 
 //configuracion api
 app.use(

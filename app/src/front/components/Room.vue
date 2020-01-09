@@ -38,19 +38,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="question in questions" :key="question.id">
+                        <tr v-for="question in questions" :key="question._id">
                             <td>{{ question.label }}</td>
                             <td>{{ question.approve }}</td>
                             <td>{{ question.reject }}</td>
                             <td>
                                 <button
-                                    v-on:click="vote(1, question.id)"
+                                    v-on:click="vote(1, question._id)"
                                     class="btn btn-sm btn-success"
                                 >
                                     Aprobar
                                 </button>
                                 <button
-                                    v-on:click="vote(0, question.id)"
+                                    v-on:click="vote(0, question._id)"
                                     class="btn btn-sm btn-danger"
                                 >
                                     Rechazar
@@ -65,12 +65,13 @@
 </template>
 <script>
 import io from "socket.io-client";
+import Room from "./../classes/Room";
 
 export default {
     name: "Room",
     data: function() {
         return {
-            roomName: "",
+            Room: null,
             socket: null,
             question: "",
             questions: []
@@ -78,39 +79,68 @@ export default {
     },
     methods: {
         vote(action, questionId) {
-            let index = this.questions.findIndex(q => q.id == questionId);
-            let question = this.questions.find(q => q.id == questionId);
-
-            if (action) {
-                ++question.approve;
-            } else {
-                ++question.reject;
-            }
-
-            this.questions[index] = question;
-            this.refreshQuestions();
+            fetch(
+                `/api/room/${this.Room._id}/questions/${questionId}/vote/${action}`,
+                {
+                    method: "POST"
+                }
+            )
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        this.refreshQuestions();
+                        this.$toast.success(data.message);
+                    } else {
+                        this.$toast.error(data.message, "Error");
+                    }
+                });
         },
         refreshQuestions() {
-            this.socket.emit("refreshQuestions", {
-                roomName: this.roomName,
-                questions: this.questions
-            });
+            this.socket.emit("refreshQuestions", this.Room._id);
         },
         sendQuestion() {
-            let newQuestion = {
-                id: this.questions.length + 1,
-                label: this.question,
-                approve: 0,
-                reject: 0
-            };
-            this.questions.unshift(newQuestion);
-            this.question = "";
-            this.refreshQuestions();
+            if (!this.question.length) {
+                this.$toast.error("Debe indicar la pregunta", "Error");
+                return;
+            }
+
+            fetch(`/api/room/${this.Room._id}/questions/${this.question}`, {
+                method: "POST"
+            })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        this.question = "";
+                        this.refreshQuestions();
+                        this.$toast.success(data.message);
+                    } else {
+                        this.$toast.error(data.message, "Error");
+                    }
+                });
         },
         defineRoom() {
             var url = new URL(window.location.href);
-            this.roomName = url.searchParams.get("roomName");
-            this.socket.emit("defineRoom", this.roomName);
+            let roomId = url.searchParams.get("room");
+
+            fetch(`/api/room/${roomId}`, {
+                method: "GET"
+            })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        this.Room = new Room(data.data);
+                        this.socket.emit("defineRoom", this.Room._id);
+                        this.refreshQuestions();
+                    } else {
+                        this.$toast.error(data.message, "Error");
+                    }
+                });
         },
         defineSocket() {
             this.socket = io("/room");

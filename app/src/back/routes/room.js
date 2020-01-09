@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const Room = require("../database/models/Room.js");
+const Room = require("../database/RoomModel");
 var Response = require("../routes/Response.js");
+const questionRoutes = require("./question");
 
 router.get("/", (req, res) => {
     let getResponse = new Response();
@@ -11,6 +12,31 @@ router.get("/", (req, res) => {
         Room.find()
             .then(data => {
                 getResponse.data = data;
+                getResponse.success = 1;
+                res.send(getResponse.getObject());
+            })
+            .catch(err => {
+                throw err;
+            });
+    } catch (error) {
+        getResponse.message = error;
+        res.send(getResponse.getObject());
+    }
+});
+
+router.get("/:id", (req, res) => {
+    let getResponse = new Response();
+
+    try {
+        let id = req.params.id;
+
+        if (!id.length) {
+            throw "Debe indicar la sala";
+        }
+
+        Room.findById(id)
+            .then(Model => {
+                getResponse.data = Model;
                 getResponse.success = 1;
                 res.send(getResponse.getObject());
             })
@@ -100,4 +126,5 @@ router.delete("/:id", (req, res) => {
     }
 });
 
+router.use("/:roomId/questions", questionRoutes);
 module.exports = router;

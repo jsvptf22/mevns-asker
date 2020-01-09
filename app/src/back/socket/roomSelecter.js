@@ -16,9 +16,5 @@ exports = module.exports = function(io) {
                     console.log(err);
                 });
         });
-
-        socket.on("refreshQuestions", data => {
-            nsp.emit("refreshQuestions", data);
-        });
     });
 };
