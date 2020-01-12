@@ -63,6 +63,9 @@ router.post("/:name", (req, res) => {
         newRoom
             .save()
             .then(() => {
+                postResponse.data = {
+                    roomId: newRoom._id
+                };
                 postResponse.message = "Sala creada";
                 postResponse.success = 1;
                 res.send(postResponse.getObject());
