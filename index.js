@@ -5,12 +5,14 @@ const socketIo = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+const cors = require("cors");
 
 require("dotenv").config({ path: ".env" });
 require("./app/src/back/database/connection");
 const { host, port } = require("./app/src/back/routes/enviromentVars");
 
 //configuracion api
+app.use(cors());
 app.use(
     bodyParser.urlencoded({
         extended: true
