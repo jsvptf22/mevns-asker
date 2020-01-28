@@ -5,6 +5,10 @@ const roomSchema = new Schema({
     name: {
         type: String
     },
+    hidden: {
+        type: Number,
+        default: 0
+    },
     state: {
         type: String,
         default: 1

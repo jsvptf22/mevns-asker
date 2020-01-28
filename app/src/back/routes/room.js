@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
     let getResponse = new Response();
 
     try {
-        Room.find()
+        Room.find({ hidden: 0 })
             .then(data => {
                 getResponse.data = data;
                 getResponse.success = 1;
@@ -54,12 +54,13 @@ router.post("/:name", (req, res) => {
 
     try {
         let name = req.params.name;
+        let hidden = req.body.hidden || 0;
 
         if (!name.length) {
             throw "Debe indicar el nombre de la sala";
         }
 
-        let newRoom = new Room({ name });
+        let newRoom = new Room({ name, hidden });
         newRoom
             .save()
             .then(() => {
