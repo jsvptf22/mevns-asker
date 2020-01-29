@@ -1,7 +1,7 @@
 <template>
     <div class="container" id="app">
         <div class="row">
-            <div class="col-12 col-md-4">
+            <!--<div class="col-12 col-md-4">
                 <div class="card">
                     <div class="card-header">
                         <h5>Crear Pregunta</h5>
@@ -26,8 +26,8 @@
                         </button>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-md-8">
+            </div>-->
+            <div class="col-12">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -44,12 +44,14 @@
                             <td>{{ question.reject }}</td>
                             <td>
                                 <button
+                                    v-if="canShow(question._id)"
                                     v-on:click="vote(1, question._id)"
                                     class="btn btn-sm btn-success"
                                 >
                                     Aprobar
                                 </button>
                                 <button
+                                    v-if="canShow(question._id)"
                                     v-on:click="vote(0, question._id)"
                                     class="btn btn-sm btn-danger"
                                 >
@@ -71,6 +73,7 @@ export default {
     name: "Room",
     data: function() {
         return {
+            identificator: "",
             Room: null,
             socket: null,
             question: "",
@@ -78,6 +81,16 @@ export default {
         };
     },
     methods: {
+        canShow(question) {
+            let actions = localStorage.getItem("actions") || "{}";
+            actions = JSON.parse(actions);
+
+            let keys = actions[this.Room._id]
+                ? Object.keys(actions[this.Room._id])
+                : [];
+
+            return keys.indexOf(question) == -1;
+        },
         vote(action, questionId) {
             fetch(
                 `/api/room/${this.Room._id}/questions/${questionId}/vote/${action}`,
@@ -90,6 +103,11 @@ export default {
                 })
                 .then(data => {
                     if (data.success) {
+                        this.storeLocalAction(
+                            this.Room._id,
+                            questionId,
+                            action
+                        );
                         this.refreshQuestions();
                         this.$toast.success(data.message);
                     } else {
@@ -150,6 +168,18 @@ export default {
             });
 
             this.defineRoom();
+        },
+        storeLocalAction(room, question, action) {
+            let actions = localStorage.getItem("actions") || "{}";
+            actions = JSON.parse(actions);
+
+            if (!actions[room]) {
+                actions[room] = {};
+            }
+
+            actions[room][question] = action;
+            actions = JSON.stringify(actions);
+            localStorage.setItem("actions", actions);
         }
     },
     created: function() {
