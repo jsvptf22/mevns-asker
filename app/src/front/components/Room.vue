@@ -1,7 +1,7 @@
 <template>
     <div class="container" id="app">
         <div class="row">
-            <!--<div class="col-12 col-md-4">
+            <div class="col-12 col-md-4">
                 <div class="card">
                     <div class="card-header">
                         <h5>Crear Pregunta</h5>
@@ -26,8 +26,8 @@
                         </button>
                     </div>
                 </div>
-            </div>-->
-            <div class="col-12">
+            </div>
+            <div class="col-12 col-md-8">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -66,23 +66,23 @@
     </div>
 </template>
 <script>
-import io from "socket.io-client";
-import Room from "./../classes/Room";
+import io from 'socket.io-client';
+import Room from './../classes/Room';
 
 export default {
-    name: "Room",
-    data: function() {
+    name: 'Room',
+    data: function () {
         return {
-            identificator: "",
+            identificator: '',
             Room: null,
             socket: null,
-            question: "",
-            questions: []
+            question: '',
+            questions: [],
         };
     },
     methods: {
         canShow(question) {
-            let actions = localStorage.getItem("actions") || "{}";
+            let actions = localStorage.getItem('actions') || '{}';
             actions = JSON.parse(actions);
 
             let keys = actions[this.Room._id]
@@ -95,13 +95,13 @@ export default {
             fetch(
                 `/api/room/${this.Room._id}/questions/${questionId}/vote/${action}`,
                 {
-                    method: "POST"
+                    method: 'POST',
                 }
             )
-                .then(function(response) {
+                .then(function (response) {
                     return response.json();
                 })
-                .then(data => {
+                .then((data) => {
                     if (data.success) {
                         this.storeLocalAction(
                             this.Room._id,
@@ -111,66 +111,66 @@ export default {
                         this.refreshQuestions();
                         this.$toast.success(data.message);
                     } else {
-                        this.$toast.error(data.message, "Error");
+                        this.$toast.error(data.message, 'Error');
                     }
                 });
         },
         refreshQuestions() {
-            this.socket.emit("refreshQuestions", this.Room._id);
+            this.socket.emit('refreshQuestions', this.Room._id);
         },
         sendQuestion() {
             if (!this.question.length) {
-                this.$toast.error("Debe indicar la pregunta", "Error");
+                this.$toast.error('Debe indicar la pregunta', 'Error');
                 return;
             }
 
             fetch(`/api/room/${this.Room._id}/questions/${this.question}`, {
-                method: "POST"
+                method: 'POST',
             })
-                .then(function(response) {
+                .then(function (response) {
                     return response.json();
                 })
-                .then(data => {
+                .then((data) => {
                     if (data.success) {
-                        this.question = "";
+                        this.question = '';
                         this.refreshQuestions();
                         this.$toast.success(data.message);
                     } else {
-                        this.$toast.error(data.message, "Error");
+                        this.$toast.error(data.message, 'Error');
                     }
                 });
         },
         defineRoom() {
             var url = new URL(window.location.href);
-            let roomId = url.searchParams.get("room");
+            let roomId = url.searchParams.get('room');
 
             fetch(`/api/room/${roomId}`, {
-                method: "GET"
+                method: 'GET',
             })
-                .then(function(response) {
+                .then(function (response) {
                     return response.json();
                 })
-                .then(data => {
+                .then((data) => {
                     if (data.success) {
                         this.Room = new Room(data.data);
-                        this.socket.emit("defineRoom", this.Room._id);
+                        this.socket.emit('defineRoom', this.Room._id);
                         this.refreshQuestions();
                     } else {
-                        this.$toast.error(data.message, "Error");
+                        this.$toast.error(data.message, 'Error');
                     }
                 });
         },
         defineSocket() {
-            this.socket = io("/room");
+            this.socket = io('/room');
 
-            this.socket.on("refreshQuestions", questions => {
+            this.socket.on('refreshQuestions', (questions) => {
                 this.questions = questions;
             });
 
             this.defineRoom();
         },
         storeLocalAction(room, question, action) {
-            let actions = localStorage.getItem("actions") || "{}";
+            let actions = localStorage.getItem('actions') || '{}';
             actions = JSON.parse(actions);
 
             if (!actions[room]) {
@@ -179,11 +179,11 @@ export default {
 
             actions[room][question] = action;
             actions = JSON.stringify(actions);
-            localStorage.setItem("actions", actions);
-        }
+            localStorage.setItem('actions', actions);
+        },
     },
-    created: function() {
+    created: function () {
         this.defineSocket();
-    }
+    },
 };
 </script>

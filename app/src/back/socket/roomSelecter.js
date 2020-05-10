@@ -1,18 +1,19 @@
-const request = require("request");
-const { host, port } = require("../routes/enviromentVars");
+const request = require('request');
 
 exports = module.exports = function(io) {
-    const nsp = io.of("/roomSelecter");
+    const host = process.env.HOST;
+    const port = process.env.PORT;
+    const nsp = io.of('/roomSelecter');
 
-    nsp.on("connection", function(socket) {
-        socket.on("refreshRooms", () => {
+    nsp.on('connection', function(socket) {
+        socket.on('refreshRooms', () => {
             request
                 .get(`http://${host}:${port}/api/room`)
-                .on("data", function(response) {
+                .on('data', function(response) {
                     let rooms = JSON.parse(response).data;
-                    nsp.emit("refreshRooms", rooms);
+                    nsp.emit('refreshRooms', rooms);
                 })
-                .on("error", function(err) {
+                .on('error', function(err) {
                     console.log(err);
                 });
         });
