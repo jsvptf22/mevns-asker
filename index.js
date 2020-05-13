@@ -37,6 +37,6 @@ require('./app/src/back/socket/room')(io);
 //se levanta el servidor
 const host = process.env.HOST;
 const port = process.env.PORT;
-server.listen(port, host, () => {
+server.listen(port, () => {
     console.log(`listening on ${host}:${port}`);
 });
